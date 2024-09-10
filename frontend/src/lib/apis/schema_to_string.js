@@ -3,7 +3,7 @@ import { LiteGraph } from "litegraph.js";
 /**
  * Node to convert a zod schema to a string representation.
  */
-function SchemaToStringConverter() {
+export function SchemaToStringConverter() {
   this.addInput("Schema", "object"); // Input: zod schema object
   this.addOutput("Schema String", "string"); // Output: string representation of the schema
 }

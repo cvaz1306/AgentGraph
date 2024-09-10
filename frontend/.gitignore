@@ -1,5 +1,5 @@
 node_modules
-
+# FRONTEND
 # Output
 .output
 .vercel
@@ -19,3 +19,7 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+#BACKEND
+#Python Virtual Env
+venv/*
