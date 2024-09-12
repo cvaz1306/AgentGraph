@@ -3,7 +3,7 @@
 * [npm](https://www.npmjs.com)
 * [Python 3.12](https://python.org)
 ### Setup
-1. Clone the repository: `git clone https://github.com/cvaz1306/`
+1. Clone the repository: `git clone https://github.com/cvaz1306/AgentGraph.git`
 2. Run the installer using one of the following commands:
 ```bash
 ./setup.bat
