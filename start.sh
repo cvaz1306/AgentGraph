@@ -1,41 +1,18 @@
 #!/bin/bash
 
-# Check if Python is installed
-if ! command -v python3 &> /dev/null; then
-    echo "Python is not installed. Please install Python and try again."
-    exit 1
-fi
+# Start the FastAPI server in the background
+echo "Starting FastAPI server..."
+cd backend || exit
+python3 -m uvicorn app.api:app --reload &
+FASTAPI_PID=$!
 
-# Check if Node.js is installed
-if ! command -v node &> /dev/null; then
-    echo "Node.js is not installed. Please install Node.js and try again."
-    exit 1
-fi
+# Start the SvelteKit dev server in the background
+echo "Starting SvelteKit dev server..."
+cd ../frontend || exit
+npm install # Run once to ensure dependencies are installed
+npm run dev -- --open &
+SVELTEKIT_PID=$!
 
-# Set up the Python virtual environment
-echo "Setting up Python virtual environment..."
-python3 -m venv venv
-source venv/bin/activate
-
-# Install Python dependencies
-echo "Installing Python dependencies..."
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# Deactivate the virtual environment
-deactivate
-
-# Set up the SvelteKit frontend
-echo "Setting up SvelteKit frontend..."
-cd frontend
-
-# Check if npm is installed
-if ! command -v npm &> /dev/null; then
-    echo "npm is not installed. Please install npm and try again."
-    exit 1
-fi
-
-# Install Node.js dependencies
-npm install
-
-echo "Setup complete!"
+# Wait for both processes to be stopped manually (optional)
+echo "Servers are running. Press Ctrl+C to stop."
+wait $FASTAPI_PID $SVELTEKIT_PID

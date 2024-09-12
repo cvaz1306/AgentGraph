@@ -8,6 +8,7 @@
 	import {  } from '$lib/apis/schema_to_string';
     import {  } from '$lib/apis/concat_arrays';
     import {  } from '$lib/apis/weather_toolchain';
+	import {  } from '$lib/apis/message_array';
     import { uploadSerializedGraph } from '$lib/apis/upload_serialized';
 	import { on } from 'svelte/events';
     import { assets } from '$app/paths'; // Import the assets path
