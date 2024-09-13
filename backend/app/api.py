@@ -1,22 +1,14 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 import json
 import os
+from database import graph
+from database.db import session
+api = APIRouter(prefix='')
 
-app = FastAPI()
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # List of allowed origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
-)
-
-@app.post('/serialized')
-@app.options("/serialized")
+@api.post('/serialized')
+@api.options("/serialized")
 async def post_serialized(request: Request):
     # Read the raw JSON data from the request body
     raw_data = await request.body()
@@ -28,29 +20,31 @@ async def post_serialized(request: Request):
     try:
         data_dict = json.loads(data_str)
         # Extract and parse the 'data' field if it exists
-        if 'data' in data_dict:
-            inner_data_str = data_dict['data']
+        if 'graph' in data_dict:
+            inner_data_str = data_dict['graph']
             inner_data = json.loads(inner_data_str)
         else:
             raise HTTPException(status_code=400, detail="Field 'data' not found in the JSON.")
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON data: {e}")
     
-    # Save the JSON data directly to a file
-    with open('data.json', 'w') as file:
-        json.dump(inner_data, file, indent=4)
-    
+    _graph = graph.Graph(name="name", file=inner_data, args={})
+    session.add(_graph)
+    session.commit()
+
     return {"message": "Data saved successfully!"}
 
-@app.get('/download-serialized')
+@api.get('/download-serialized')
 async def download_serialized():
     # Check if the file exists
-    if not os.path.exists('data.json'):
-        raise HTTPException(status_code=404, detail="Data file not found")
     
-    # Read the JSON data from the file
-    with open('data.json', 'r') as file:
-        data = json.load(file)
-    
-    # Return the JSON data as a response
-    return JSONResponse(content=data)
+    search_name="name"
+    _graph = graph.Graph.query.filter(graph.Graph.name == search_name).first()
+
+    return JSONResponse(content=_graph.file)
+@api.get('/test')
+def test():
+    _graph=graph.Graph(file={})
+    session.add(_graph)
+    session.commit()
+    return {"message": "Hello World"}
